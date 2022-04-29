@@ -11,6 +11,7 @@ from aws_cdk.aws_lambda import Function as fn
 import boto3
 import re
 from .lib.ec2alarm import EC2StatusCheckFailedAlarm
+from .lib.ec2alarm import EC2CPUUtilizationAlarm
 
 
 class CdkBatchAlarmStack(Stack):
@@ -19,7 +20,8 @@ class CdkBatchAlarmStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         SNSTopicARN = 'arn:aws:sns:ap-northeast-1:750521193989:CloudwatchAlarmTopic'
-        EC2NameRegex = '^mock*'
+        EC2NameRegex01 = '^mock*'
+        EC2NameRegex02 = '^aws*'
 
         cloudwatchAlarmTopic = sns.Topic.from_topic_arn(self, 'cloudwatchAlarmTopic', SNSTopicARN)
         
@@ -29,34 +31,12 @@ class CdkBatchAlarmStack(Stack):
         # print(ec2_tags)
         # print(nametagInstanceDict)
         for name in nametagInstanceDict:
-            if(re.search(EC2NameRegex, name)):
+            if(re.search(EC2NameRegex01, name)):
                 # print(name, nametagInstanceDict[name])
-                # self.createStatusCheckFailedAlarm(cloudwatchAlarmTopic, nametagInstanceDict[name], name)
                 EC2StatusCheckFailedAlarm(self,'SystemCheckFailed'+nametagInstanceDict[name],nametagInstanceDict[name], name, cloudwatchAlarmTopic)
-
-    # def createStatusCheckFailedAlarm(self, cloudwatchAlarmTopic, instanceID, instanceName):
-    #     statusCFMetric = cloudwatch.Metric(
-    #         namespace='AWS/EC2',
-    #         metric_name='StatusCheckFailed',
-    #         dimensions_map={
-    #             "InstanceId": instanceID
-    #         }
-    #     )
-
-    #     statusCFAlarm = cloudwatch.Alarm(self, 'alarm'+instanceID, 
-    #         alarm_name= instanceName+'-SCF-'+'Alarm',
-    #         threshold= 0,
-    #         evaluation_periods=1,
-    #         metric=statusCFMetric,
-    #         comparison_operator=cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
-    #     )
-
-    #     statusCFAlarm.add_alarm_action(
-    #         cw_actions.SnsAction(
-    #             cloudwatchAlarmTopic
-    #         )
-    #     )
-
+            if(re.search(EC2NameRegex02, name)):
+                print(name, nametagInstanceDict[name])
+                EC2CPUUtilizationAlarm(self, 'CPUUtilization'+nametagInstanceDict[name], nametagInstanceDict[name], name, cloudwatchAlarmTopic)
 
     def _getNametagInstanceDict(self, ec2_tags, nametagInstanceDict):
         for item in ec2_tags:
