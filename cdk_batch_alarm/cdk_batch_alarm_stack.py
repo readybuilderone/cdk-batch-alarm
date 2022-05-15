@@ -19,11 +19,13 @@ class CdkBatchAlarmStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        SNSTopicARN = 'arn:aws:sns:ap-northeast-1:750521193989:CloudwatchAlarmTopic'
+        AlarmSNSTopicARN = 'arn:aws:sns:ap-northeast-1:750521193989:CloudwatchAlarmTopic'
+        OKSNSTopicARN = 'arn:aws:sns:ap-northeast-1:750521193989:CloudwatchAlarmTopic'
         EC2NameRegex01 = '^mock*'
         EC2NameRegex02 = '^aws*'
 
-        cloudwatchAlarmTopic = sns.Topic.from_topic_arn(self, 'cloudwatchAlarmTopic', SNSTopicARN)
+        cloudwatchAlarmTopic = sns.Topic.from_topic_arn(self, 'cloudwatchAlarmTopic', AlarmSNSTopicARN)
+        cloudwatchOKTopic = sns.Topic.from_topic_arn(self, 'cloudwatchOKTopic', OKSNSTopicARN)
         
         nametagInstanceDict = {}
         ec2_tags = self._getAllEC2Tags()
@@ -32,11 +34,12 @@ class CdkBatchAlarmStack(Stack):
         # print(nametagInstanceDict)
         for name in nametagInstanceDict:
             if(re.search(EC2NameRegex01, name)):
+                pass
                 # print(name, nametagInstanceDict[name])
-                EC2StatusCheckFailedAlarm(self,'SystemCheckFailed'+nametagInstanceDict[name],nametagInstanceDict[name], name, cloudwatchAlarmTopic)
+                EC2StatusCheckFailedAlarm(scope =self, id ='SystemCheckFailed'+nametagInstanceDict[name], instanceID=nametagInstanceDict[name], instanceName=name, cloudwatchAlarmTopic = cloudwatchAlarmTopic ,cloudwatchOKAlarmTopic= cloudwatchOKTopic)
             if(re.search(EC2NameRegex02, name)):
                 print(name, nametagInstanceDict[name])
-                EC2CPUUtilizationAlarm(self, 'CPUUtilization'+nametagInstanceDict[name], nametagInstanceDict[name], name, cloudwatchAlarmTopic)
+                EC2CPUUtilizationAlarm(self, id='CPUUtilization'+nametagInstanceDict[name], instanceID= nametagInstanceDict[name], instanceName= name, cloudwatchAlarmTopic= cloudwatchAlarmTopic)
 
     def _getNametagInstanceDict(self, ec2_tags, nametagInstanceDict):
         for item in ec2_tags:
