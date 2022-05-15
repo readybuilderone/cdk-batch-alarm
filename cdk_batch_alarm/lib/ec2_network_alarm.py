@@ -2,18 +2,15 @@ from signal import alarm
 from constructs import Construct
 from aws_cdk import (
     Duration,
-    aws_lambda as _lambda,
     aws_cloudwatch as cloudwatch,
     aws_cloudwatch_actions as cw_actions,
     aws_sns as sns,
 )
-from aws_cdk.aws_lambda import Function as fn
 import sys
 
 
 class EC2NetworkInAlarm(Construct):
 
-    # def __init__(self, scope: Construct, id: str,instanceID: str, instanceName:str, cloudwatchAlarmTopic:sns.ITopic, threshold=0.5, evaluationPeriods=1, **kwargs):
     def __init__(self, scope: Construct, id: str,instanceID: str, instanceName:str, cloudwatchAlarmTopic:sns.ITopic = None, cloudwatchOKAlarmTopic: sns.ITopic = None, cloudwatchInsDataAlarmTopic: sns.ITopic = None, threshold= sys.maxsize, period=300, evaluationPeriods=1, statistic='avg', operator = cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD, dtm = cloudwatch.TreatMissingData.MISSING, **kwargs):
 
         super().__init__(scope, id, **kwargs)
@@ -53,7 +50,6 @@ class EC2NetworkInAlarm(Construct):
 
 class EC2NetworkOutAlarm(Construct):
 
-    # def __init__(self, scope: Construct, id: str,instanceID: str, instanceName:str, cloudwatchAlarmTopic:sns.ITopic, threshold=0.5, evaluationPeriods=1, **kwargs):
     def __init__(self, scope: Construct, id: str,instanceID: str, instanceName:str, cloudwatchAlarmTopic:sns.ITopic = None, cloudwatchOKAlarmTopic: sns.ITopic = None, cloudwatchInsDataAlarmTopic: sns.ITopic = None, threshold= sys.maxsize, period=300, evaluationPeriods=1, statistic='avg', operator = cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD, dtm = cloudwatch.TreatMissingData.MISSING, **kwargs):
 
         super().__init__(scope, id, **kwargs)

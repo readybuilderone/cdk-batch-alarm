@@ -2,12 +2,10 @@ from signal import alarm
 from constructs import Construct
 from aws_cdk import (
     Duration,
-    aws_lambda as _lambda,
     aws_cloudwatch as cloudwatch,
     aws_cloudwatch_actions as cw_actions,
     aws_sns as sns,
 )
-from aws_cdk.aws_lambda import Function as fn
 
 class EC2StatusCheckFailedAlarm(Construct):
     def __init__(self, scope: Construct, id: str,instanceID: str, instanceName:str, cloudwatchAlarmTopic:sns.ITopic = None, cloudwatchOKAlarmTopic: sns.ITopic = None, cloudwatchInsDataAlarmTopic: sns.ITopic = None, threshold=1, period=60, evaluationPeriods=1, statistic='max', operator = cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD, dtm = cloudwatch.TreatMissingData.BREACHING, **kwargs):

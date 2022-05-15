@@ -2,12 +2,10 @@ from signal import alarm
 from constructs import Construct
 from aws_cdk import (
     Duration,
-    aws_lambda as _lambda,
     aws_cloudwatch as cloudwatch,
     aws_cloudwatch_actions as cw_actions,
     aws_sns as sns,
 )
-from aws_cdk.aws_lambda import Function as fn
 
 
 class EC2EBSReadBytesAlarm(Construct):
