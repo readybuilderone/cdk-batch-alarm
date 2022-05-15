@@ -13,7 +13,7 @@ class EC2StatusCheckFailedAlarm(Construct):
     def __init__(self, scope: Construct, id: str,instanceID: str, instanceName:str, cloudwatchAlarmTopic:sns.ITopic = None, cloudwatchOKAlarmTopic: sns.ITopic = None, cloudwatchInsDataAlarmTopic: sns.ITopic = None, threshold=1, period=60, evaluationPeriods=1, statistic='max', operator = cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD, dtm = cloudwatch.TreatMissingData.BREACHING, **kwargs):
         super().__init__(scope, id, **kwargs)
 
-        statusCFMetric = cloudwatch.Metric(
+        metric = cloudwatch.Metric(
             namespace='AWS/EC2',
             metric_name='StatusCheckFailed',
             dimensions_map={
@@ -21,11 +21,11 @@ class EC2StatusCheckFailedAlarm(Construct):
             }
         )
 
-        statusCFAlarm = cloudwatch.Alarm(self, 'scfalarm'+instanceID, 
+        alarm = cloudwatch.Alarm(self, 'scfalarm'+instanceID, 
             alarm_name= instanceName+'-SCF-'+'Alarm',
             threshold= threshold,
             evaluation_periods=evaluationPeriods,
-            metric=statusCFMetric.with_(
+            metric=metric.with_(
                 period=Duration.seconds(period),
                 statistic=statistic
             ),
@@ -34,15 +34,15 @@ class EC2StatusCheckFailedAlarm(Construct):
         )
 
         if cloudwatchAlarmTopic:
-            statusCFAlarm.add_alarm_action(
+            alarm.add_alarm_action(
                 cw_actions.SnsAction(cloudwatchAlarmTopic)
             )
         if cloudwatchOKAlarmTopic:
-            statusCFAlarm.add_ok_action(
+            alarm.add_ok_action(
                 cw_actions.SnsAction(cloudwatchOKAlarmTopic)
             )
         if cloudwatchInsDataAlarmTopic:
-            statusCFAlarm.add_insufficient_data_action(
+            alarm.add_insufficient_data_action(
                 cw_actions.SnsAction(cloudwatchInsDataAlarmTopic)
             )
 
