@@ -10,8 +10,8 @@ from constructs import Construct
 from aws_cdk.aws_lambda import Function as fn
 import boto3
 import re
-from .lib.ec2alarm import EC2StatusCheckFailedAlarm
-from .lib.ec2alarm import EC2CPUUtilizationAlarm
+from .lib.ec2_status_alarm import EC2StatusCheckFailedAlarm
+from .lib.ec2_cpu_alarm import EC2CPUUtilizationAlarm
 
 
 class CdkBatchAlarmStack(Stack):
