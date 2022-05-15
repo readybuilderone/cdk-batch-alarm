@@ -12,6 +12,13 @@ import boto3
 import re
 from .lib.ec2_status_alarm import EC2StatusCheckFailedAlarm
 from .lib.ec2_cpu_alarm import EC2CPUUtilizationAlarm
+from .lib.ec2_network_alarm import EC2NetworkInAlarm
+from .lib.ec2_network_alarm import EC2NetworkOutAlarm
+from .lib.ec2_ebs_alarm import EC2EBSReadBytesAlarm
+from .lib.ec2_ebs_alarm import EC2EBSWriteBytesAlarm
+from .lib.ec2_ebs_alarm import EC2EBSReadOPSAlarm
+from .lib.ec2_ebs_alarm import EC2EBSWriteOPSAlarm
+from .lib.ec2_ebs_alarm import EC2EBSQueueLenAlarm
 
 
 class CdkBatchAlarmStack(Stack):
@@ -38,8 +45,15 @@ class CdkBatchAlarmStack(Stack):
                 # print(name, nametagInstanceDict[name])
                 EC2StatusCheckFailedAlarm(scope =self, id ='SystemCheckFailed'+nametagInstanceDict[name], instanceID=nametagInstanceDict[name], instanceName=name, cloudwatchAlarmTopic = cloudwatchAlarmTopic ,cloudwatchOKAlarmTopic= cloudwatchOKTopic)
             if(re.search(EC2NameRegex02, name)):
-                print(name, nametagInstanceDict[name])
+                # print(name, nametagInstanceDict[name])
                 EC2CPUUtilizationAlarm(self, id='CPUUtilization'+nametagInstanceDict[name], instanceID= nametagInstanceDict[name], instanceName= name, cloudwatchAlarmTopic= cloudwatchAlarmTopic)
+                EC2NetworkInAlarm(self, id= 'NetworkIn'+nametagInstanceDict[name], instanceID=nametagInstanceDict[name], instanceName= name, cloudwatchAlarmTopic= cloudwatchAlarmTopic)
+                EC2NetworkOutAlarm(self, id= 'NetworkOut'+nametagInstanceDict[name], instanceID=nametagInstanceDict[name], instanceName= name, cloudwatchAlarmTopic= cloudwatchAlarmTopic)
+                EC2EBSReadBytesAlarm(self, id= 'EBSReadBytes'+nametagInstanceDict[name], instanceID=nametagInstanceDict[name], instanceName= name, cloudwatchAlarmTopic= cloudwatchAlarmTopic, threshold= 999999999)
+                EC2EBSWriteBytesAlarm(self, id= 'EBSWriteBytes'+nametagInstanceDict[name], instanceID=nametagInstanceDict[name], instanceName= name, cloudwatchAlarmTopic= cloudwatchAlarmTopic, threshold= 999999999)
+                EC2EBSReadOPSAlarm(self, id= 'EBSReadOps'+nametagInstanceDict[name], instanceID=nametagInstanceDict[name], instanceName= name, cloudwatchAlarmTopic= cloudwatchAlarmTopic, threshold= 999999999)
+                EC2EBSWriteOPSAlarm(self, id= 'EBSWriteOps'+nametagInstanceDict[name], instanceID=nametagInstanceDict[name], instanceName= name, cloudwatchAlarmTopic= cloudwatchAlarmTopic, threshold= 999999999)
+                EC2EBSQueueLenAlarm(self, id= 'EBSQueueLen'+nametagInstanceDict[name], instanceID=nametagInstanceDict[name], instanceName= name, cloudwatchAlarmTopic= cloudwatchAlarmTopic, threshold= 999999999)
 
     def _getNametagInstanceDict(self, ec2_tags, nametagInstanceDict):
         for item in ec2_tags:
